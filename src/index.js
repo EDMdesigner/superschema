@@ -5,20 +5,19 @@ var defaultName = "configObject";
 var nonRequiredName = "optional";
 var nullableName = "nullable";
 
-class BackendError extends Error {
-	constructor(message, code, status) {
+class ErrorWithCode extends Error {
+	constructor(message, code) {
 		super(message);
 		this.code = code;
-		this.status = status;
 	}
 }
 
 function throwConfigError(message) {
-	throw new BackendError(message, "INVALID_CONFIG", 500);
+	throw new ErrorWithCode(message, "INVALID_CONFIG");
 }
 
 function throwPatternError(message) {
-	throw new BackendError(message, "INVALID_INPUT_PATTERN", 400);
+	throw new ErrorWithCode(message, "INVALID_INPUT_PATTERN");
 }
 
 function extendSuperSchema(config) {
