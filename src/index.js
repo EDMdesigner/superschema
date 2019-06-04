@@ -5,16 +5,32 @@ var defaultName = "configObject";
 var nonRequiredName = "optional";
 var nullableName = "nullable";
 
+class BackendError extends Error {
+	constructor(message, code, status) {
+		super(message);
+		this.code = code;
+		this.status = status;
+	}
+}
+
+function throwConfigError(message) {
+	throw new BackendError(message, "INVALID_CONFIG", 500);
+}
+
+function throwPatternError(message) {
+	throw new BackendError(message, "INVALID_INPUT_PATTERN", 400);
+}
+
 function extendSuperSchema(config) {
 	if (typeof config !== "object") {
-		throw new Error("'config' has to be an object!");
+		throwConfigError("'config' has to be an object!");
 	}
 	var ko = config.knockout || config.ko;
 	if (!ko) {
-		throw new Error("superschema.extend called without any known parameters!");
+		throwConfigError("superschema.extend called without any known parameters!");
 	}
 	if (typeof ko !== "object" || typeof ko.isObservable !== "function") {
-		throw new Error("Invalid 'knockout' parameter given!");
+		throwConfigError("Invalid 'knockout' parameter given!");
 	}
 	koInstance = ko;
 }
@@ -27,7 +43,7 @@ function checkPattern(item, pattern, name) {
 	if (typeof pattern === "string") {
 		return checkStringPattern(item, pattern, name);
 	}
-	throw new Error("Invalid pattern: " + pattern);
+	throwConfigError("Invalid pattern: " + pattern);
 }
 
 function checkStringPattern(item, pattern, name) {
@@ -46,10 +62,10 @@ function checkStringPattern(item, pattern, name) {
 		return checkStringPattern(item, remainingPattern, name);
 	}
 	if (item === undefined) {
-		throw new Error(name + " is mandatory!");
+		throwPatternError(name + " is mandatory!");
 	}
 	if (item === null) {
-		throw new Error(name + " shouldn't be null!");
+		throwPatternError(name + " shouldn't be null!");
 	}
 	checkType(item, currentType, name);
 	if (remainingPattern) {
@@ -65,27 +81,27 @@ function checkStringPattern(item, pattern, name) {
 			return;
 		}
 
-		throw new Error("Invalid pattern: " + pattern);
+		throwConfigError("Invalid pattern: " + pattern);
 	}
 }
 
 function checkObjectPattern(item, pattern, name) {
 	if (item === undefined) {
 		if (pattern.__required !== false) {
-			throw new Error(name + " is mandatory!");
+			throwPatternError(name + " is mandatory!");
 		}
 		return;
 	}
 	if (item === null) {
 		if (pattern.__nullable !== true) {
-			throw new Error(name + " shouldn't be null!");
+			throwPatternError(name + " shouldn't be null!");
 		}
 		return;
 	}
 	var allowedValues = pattern.__allowedValues;
 	if (allowedValues) {
 		if (!Array.isArray(allowedValues)) {
-			throw new Error("Invalid pattern: the __allowedValues property always has to be an array!");
+			throwConfigError("Invalid pattern: the __allowedValues property always has to be an array!");
 		}
 		return checkAllowedValues(item, allowedValues, name);
 	}
@@ -125,7 +141,7 @@ function checkAllowedValues(item, values, name) {
 			return;
 		}
 	}
-	throw new Error("The value of " + name + " is not among the allowed ones!");
+	throwPatternError("The value of " + name + " is not among the allowed ones!");
 }
 
 function checkShorthandPattern(item, prop, pattern, name) {
@@ -133,7 +149,7 @@ function checkShorthandPattern(item, prop, pattern, name) {
 	var current = item;
 	keys.forEach(function(key) {
 		if (typeof current !== "object") {
-			throw new Error(name + " should have object type!");
+			throwPatternError(name + " should have object type!");
 		}
 		current = current[key];
 		name += "." + key;
@@ -144,29 +160,29 @@ function checkShorthandPattern(item, prop, pattern, name) {
 function createSimpleTypeChecker(type) {
 	return function(value, name) {
 		if (typeof value !== type) {
-			throw new Error(name + " should have " + type + " type!");
+			throwPatternError(name + " should have " + type + " type!");
 		}
 	};
 }
 
 function checkArray(value, name) {
 	if (!Array.isArray(value)) {
-		throw new Error(name + " has to be an array!");
+		throwPatternError(name + " has to be an array!");
 	}
 }
 
 function checkObservable(value, name) {
 	if (!koInstance) {
-		throw new Error("Observable checking is not possible because no knockout instance is given!");
+		throwConfigError("Observable checking is not possible because no knockout instance is given!");
 	}
 	if (!koInstance.isObservable(value)) {
-		throw new Error(name + " has to be an observable!");
+		throwPatternError(name + " has to be an observable!");
 	}
 }
 
 function checkDate(value, name) {
 	if (!(value instanceof Date)) {
-		throw new Error(name + " has to be a date object!");
+		throwPatternError(name + " has to be a date object!");
 	}
 }
 
@@ -183,7 +199,7 @@ var typeCheckers = {
 
 function checkType(value, type, name) {
 	if (!typeCheckers[type]) {
-		throw new Error("Unknown type: " + type);
+		throwConfigError("Unknown type: " + type);
 	}
 	typeCheckers[type](value, name);
 }
