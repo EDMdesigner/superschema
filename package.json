@@ -1,6 +1,6 @@
 {
   "name": "superschema",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Awesome checking tool",
   "main": "src/index.js",
   "scripts": {
