@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                withNPM(npmrcConfig:'npmrc-private') {
+                withNPM(npmrcConfig:'npmrc-github') {
 					sh 'npm install --silent'
 				}
             }
@@ -21,7 +21,7 @@ pipeline {
                 branch "master"
             }
             steps {
-                withNPM(npmrcConfig:'npmrc-private') {
+                withNPM(npmrcConfig:'npmrc-github') {
 					sh 'npm publish'
 				}
             }
