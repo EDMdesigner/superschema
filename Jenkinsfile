@@ -1,13 +1,13 @@
 pipeline {
     agent any
     tools {
-        nodejs 'Node Argon [4.6.0] + mocha, gulp, grunt, jasmine'
+        nodejs 'Node 8.0.0'
     }
     stages {
         stage('build') {
             steps {
-                withNPM(npmrcConfig:'npmrc-private') {
-					sh 'npm install --silent'
+                withNPM(npmrcConfig:'npmrc-github') {
+					sh 'npm install'
 				}
             }
         }
@@ -21,7 +21,7 @@ pipeline {
                 branch "master"
             }
             steps {
-                withNPM(npmrcConfig:'npmrc-private') {
+                withNPM(npmrcConfig:'npmrc-github') {
 					sh 'npm publish'
 				}
             }
