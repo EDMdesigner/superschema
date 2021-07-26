@@ -7,7 +7,7 @@ pipeline {
         stage('build') {
             steps {
                 withNPM(npmrcConfig:'npmrc-github') {
-					sh 'npm install --silent'
+					sh 'npm install'
 				}
             }
         }
