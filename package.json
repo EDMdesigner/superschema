@@ -1,5 +1,5 @@
 {
-  "name": "@edmdesigner/superschema",
+  "name": "@EDMdesigner/superschema",
   "version": "0.3.2",
   "description": "Awesome checking tool",
   "main": "src/index.js",
