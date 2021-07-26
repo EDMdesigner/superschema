@@ -18,12 +18,12 @@
   "homepage": "https://github.com/EDMdesigner/superschema#readme",
   "dependencies": {},
   "devDependencies": {
-    "@gulp": "^3.9.1",
-    "@gulp-istanbul": "^1.1.1",
-    "@gulp-jasmine": "^2.4.2",
-    "@gulp-jshint": "^2.0.4",
-    "@jshint": "^2.9.4",
-    "@jshint-stylish": "^2.2.1",
-    "@knockout": "^3.4.2"
+    "gulp": "^3.9.1",
+    "gulp-istanbul": "^1.1.1",
+    "gulp-jasmine": "^2.4.2",
+    "gulp-jshint": "^2.0.4",
+    "jshint": "^2.9.4",
+    "jshint-stylish": "^2.2.1",
+    "knockout": "^3.4.2"
   }
 }
